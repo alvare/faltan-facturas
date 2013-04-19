@@ -1,0 +1,6 @@
+(ns faltan.web-test
+  (:require [clojure.test :refer :all]
+            [faltan.web :refer :all]))
+
+(deftest first-test
+  (is false "Tests should be written"))
