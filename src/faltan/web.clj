@@ -20,6 +20,11 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
+(defn index 
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body "<h1>Te Hola</h1>"})
+
 (defroutes app
   (ANY "/repl" {:as req}
        (drawbridge req))
@@ -49,11 +54,6 @@
                             trace/wrap-stacktrace))
                          (site {:session {:store store}}))
                      {:port port :join? false})))
-
-(defn index 
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "<h1>Te Hola</h1>"})
 ;; For interactive development:
 ;; (.stop server)
 ;; (def server (-main))
