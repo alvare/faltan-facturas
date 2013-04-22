@@ -1,0 +1,7 @@
+(def lol #{"lol" "pepe"})
+lol
+lol "lol"
+lol "sd"
+(lol "sd")
+(lol "lol")
+(words/lol "lol")
