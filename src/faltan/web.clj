@@ -9,6 +9,8 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.basic-authentication :as basic]
             [cemerick.drawbridge :as drawbridge]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
             [environ.core :refer [env]]))
 
 (defn- authenticated? [user pass]
@@ -20,21 +22,15 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(defn index 
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "<h1>Te Hola</h1>"})
+(defn index [req]
+  (clostache/render (slurp (io/resource "templates/index.html")) (zipmap [:year :month :day :hour :minute] (split ((req :query-params) "date") #"-"))))
 
 (defroutes app
   (ANY "/repl" {:as req}
        (drawbridge req))
-;;  (GET "/" []
-;;       {:status 200
-;;        :headers {"Content-Type" "text/plain"}
-;;        :body (pr-str ["Hello" :from 'Heroku])})
   (GET "/" [] index)
-  (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+  (route/resources "/" {:root "templates"})
+  (route/not-found (slurp (io/resource "404.html"))))
 
 (defn wrap-error-page [handler]
   (fn [req]

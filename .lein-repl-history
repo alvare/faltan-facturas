@@ -5,3 +5,205 @@ lol "sd"
 (lol "sd")
 (lol "lol")
 (words/lol "lol")
+(defn app [request]
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body "Hello World"})
+(require 'ring.adapter.jetty)
+(defonce server (ring.adapter.jetty/run-jetty #'app {:port 8080 :join? false}))
+(defn app [request]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body "<h1>Hello World</h1>"})
+            [clojure.java.io :as io]
+(require 'clojure.java.io)
+(clojure.java.io/resource "hola")
+(clojure.java.io/resource "404.html")
+(ns faltan.web
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [compojure.handler :refer [site]]
+            [compojure.route :as route]
+            [clojure.java.io :as io]
+            [ring.middleware.stacktrace :as trace]
+            [ring.middleware.session :as session]
+            [ring.middleware.session.cookie :as cookie]
+            [ring.adapter.jetty :as jetty]
+            [ring.middleware.basic-authentication :as basic]
+            [cemerick.drawbridge :as drawbridge]
+            [environ.core :refer [env]]))
+(defn- authenticated? [user pass]
+  ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
+  (= [user pass] [(env :repl-user false) (env :repl-password false)]))
+(def ^:private drawbridge
+  (-> (drawbridge/ring-handler)
+      (session/wrap-session)
+      (basic/wrap-basic-authentication authenticated?)))
+(defn index [a]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (slurp (io/resource "templates/index.html"))})
+(defroutes app
+  (ANY "/repl" {:as req}
+       (drawbridge req))
+  (GET "/" [] index)
+  (route/resources "/" {:root "templates"})
+  (route/not-found (slurp (io/resource "404.html"))))
+(defn wrap-error-page [handler]
+  (fn [req]
+    (try (handler req)
+         (catch Exception e
+           {:status 500
+            :headers {"Content-Type" "text/html"}
+            :body (slurp (io/resource "500.html"))}))))
+(defn -main [& [port]]
+  (let [port (Integer. (or port (env :port) 5000))
+        ;; TODO: heroku config:add SESSION_SECRET=$RANDOM_16_CHARS
+        store (cookie/cookie-store {:key (env :session-secret)})]
+    (jetty/run-jetty (-> #'app
+                         ((if (env :production)
+                            wrap-error-page
+                            trace/wrap-stacktrace))
+                         (site {:session {:store store}}))
+                     {:port port :join? false})))
+-main
+(-main)
+(io/resource "templates/index.html")
+(slurp (io/resource "templates/index.html"))
+(defn index [a]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (slurp (io/resource "templates/index.html") :encoding "UTF-8")})
+(slurp (io/resource "templates/index.html") :encoding "UTF-8")
+(io/resource "templates/index.html")
+(slurp (io/resource "templates/index.html") :encoding "UTF-8")
+(slurp "templates/index.html")
+(slurp "resources/templates/index.html")
+(slurp "resources/dsds.txt")
+(slurp "resources/templates/js/jquery.countdown.js")
+(slurp "resources/templates/index.html")
+(slurp "resources/templates/dada.html")
+(slurp "resources/templates/index.html")
+(defn template [text, data]
+  'text)
+(template "caca")
+(template "caca" 3)
+(defn template [text, data]
+  text)
+(template "caca" 3)
+(clojure.string/replace "The color is red." #"[aeiou]"  #(str %1 %1))
+(clojure.string/replace "The color is red." #"[aeipu]"  #(str %1 %1))
+(clojure.string/replace "The color is red." #"[aeiou]"  #(str %1 %1))
+(str "a" "a")
+(clojure.string/replace "The color is {{ red }}." #"{{red}}"  "a")
+(clojure.string/replace "The color is {{ red }}." #"{{ red }}"  "a")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ red \}\}"  "a")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ .+ \}\}"  "a")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  "$1")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  "$1d")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  "d$1d")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  {"red" "caca" "green" "pepe"})
+{"a" 1 "b" 2}
+(def p {"a" 1 "b" 2})
+p
+(keys p)
+(values p)
+(val p)
+(value p)
+(keys p)
+(p "a")
+(p "b")
+(clojure.string/replace "The color is {{ red }}." #"\{\{ .+ \}\}"  {"red" "caca" "green" "pepe"})
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  {"$1" "caca" "green" "pepe"})
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  (if ($1 = "red"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}"  (if ($1 = "red")))
+(if (= "da" "da") 4 6)
+(if (= "da" "dda") 4 6)
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "red") 3 666))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= $1 "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= '$1 "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (== "$1" "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "red") "d" "a"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "red") "d" "$1"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" ""red"") "d" "$1"))
+(clojure.string/replace "The color is {{ red }}." #"\{\{ (.+) \}\}" (if (= "$1" "\"red\"") "d" "$1"))
+(clojure.string/replace "The color is red." #"red|d"  {"red" "fff" "d" 6})
+(clojure.string/replace "The color is {{red}}." #"\{\{(.*)\}\}"  {"red" "fff" "d" 6})
+(clojure.string/replace "The color is {{red}}." #"\{\{(.*)\}\}"  {"red" "$1" "d" 6})
+(clojure.string/replace "The color is {{red}}." #"\{\{(.*)\}\}"  {"$1" "$1" "d" 6})
+(clojure.string/replace "The color is {{red}}." #"\{\{(.*)\}\}"  {$1 "$1" "d" 6})
+(require 'clojure.template)
+clojure.template
+(clojure.template
+(apply-template)
+(clojure.template/apply-template
+)
+(ns faltan.web
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [compojure.handler :refer [site]]
+            [compojure.route :as route]
+            [clojure.java.io :as io]
+            [ring.middleware.stacktrace :as trace]
+            [ring.middleware.session :as session]
+            [ring.middleware.session.cookie :as cookie]
+            [ring.adapter.jetty :as jetty]
+            [ring.middleware.basic-authentication :as basic]
+            [cemerick.drawbridge :as drawbridge]
+            [net.cgrand.enlive-html :as html]
+            [environ.core :refer [env]]))
+(ns faltan.web
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+              [net.cgrand.enlive-html :as html]
+)
+(html/deftemplate index "templates/index.html" var
+(html/deftemplate index "templates/index.html" [var]
+  [:h1] (html/content (:message "lala")))
+(html/deftemplate index "templates/index.html" [var]
+  [:h1] (html/content (:message var)))
+index "da"
+index {:message "da"}
+(index "da")
+(index {:message "da"})
+{:a 1 :b 2}
+{:a 1, :b 2}
+{:a 1 :b 2}
+{:a 1 :b 2} a
+({:a 1 :b 2} :a)
+({:a 1 :b 2} a)
+({:a 1 :b 2} :a)
+{"date" "2013-04-24-18-00"}
+{"date" "2013-04-24-18-00"} "date"
+({"date" "2013-04-24-18-00"} "date")
+({"date" "2013-04-24-18-00"} :date)
+({"date" "2013-04-24-18-00"} "date")
+({"date" "2013-04-24-18-00"} "dated")
+({"date" "2013-04-24-18-00"} "date")
+(split "-" ({"date" "2013-04-24-18-00"} "date"))
+(clojure.string/split "-" ({"date" "2013-04-24-18-00"} "date"))
+(load clojure.string)
+(require clojure.string)
+(load 'clojure.string)
+(require 'clojure.string)
+(clojure.string/split "-" ({"date" "2013-04-24-18-00"} "date"))
+(clojure.string/split ({"date" "2013-04-24-18-00"} "date") "-")
+(clojure.string/split ({"date" "2013-04-24-18-00"} "date") #"-")
+({"date" "2013-04-24-18-00"} "date")
+(use 'clojure.string)
+(split ({"date" "2013-04-24-18-00"} "date") #"-")
+(let year month day hour minute (split ({"date" "2013-04-24-18-00"} "date") #"-"))
+(let [[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
+year
+(year)
+('year)
+('year 1)
+('year "year")
+(str year)
+(let [[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
+(str year)
+(str 'year)
+([[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
+('[[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
+[[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")]
+(str [[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
+(zipmap [:year :month :day :hour :minute] (split ({"date" "2013-04-24-18-00"} "date") #"-"))
