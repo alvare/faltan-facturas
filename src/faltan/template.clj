@@ -1,2 +1,0 @@
-(defn template [text, data]
-  

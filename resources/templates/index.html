@@ -17,12 +17,12 @@
 }
 
 </style>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
 <script type="text/javascript" src="js/jquery.countdown.js"></script>
 <script type="text/javascript">
 $(function () {
 	var austDay = new Date();
-	austDay = new Date(2013, {{month}} - 1, {{day}}, {{hour}}, {{minute}}, 0 ,0);
+	austDay = new Date({{year}}, {{month}} - 1, {{day}}, {{hour}}, {{minutes}}, 0 ,0);
 	$('#defaultCountdown').countdown({until: austDay});
 	$('#year').text(austDay.getFullYear());
 });
@@ -32,6 +32,5 @@ $(function () {
 <div id="content">
     <div id="defaultCountdown"></div>
 </div>
-<h1>{{ date }}</h1>
 </body>
 </html>

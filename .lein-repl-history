@@ -207,3 +207,252 @@ year
 [[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")]
 (str [[year month day hour minute] (split ({"date" "2013-04-24-18-00"} "date") #"-")])
 (zipmap [:year :month :day :hour :minute] (split ({"date" "2013-04-24-18-00"} "date") #"-"))
+(require faltan.web)
+(require 'faltan.web)
+(-main)
+-main
+faltan.web/app
+faltan.web/-main
+(faltan.web/-main)
+(require 'faltan.web)
+(faltan.web/-main)
+(require '[clojure.java.jdbc :as sql])
+(sql/with-connection "postgresql://localhost:5432/facturas" (sql/create-table :testing [:data :text]))
+(sql/with-connection "postgresql://localhost:5432/facturas" :user "postgres" (sql/create-table :testing [:data :text]))
+(sql/with-connection "postgresql://localhost:5432/facturas" :user "postgres" :password "chango" (sql/create-table :testing [:data :text]))
+(sql/with-connection "postgresql://localhost:5432/facturas" (sql/create-table :testing [:data :text]))
+(let [db-host "localhost"
+      db-port 5432
+db-name "facturas"
+]
+(let [db-host "localhost"
+db-port 5432
+db-name "facturas"
+]
+  (def db {:classname "org.postgresql.Driver" ; must be in classpath
+           :subprotocol "postgresql"
+           :subname (str "//" db-host ":" db-port "/" db-name)
+:user "postgres"
+:password "chango"}))
+db
+(sql/with-connection db (sql/create-table :testing [:data :text]))
+(sql/with-connection db (sql/insert-record :testing {:data "Hello World"})))
+(sql/with-connection db (sql/insert-record :testing {:data "Hello World"}))
+(sql/with-connection db  (sql/with-query-results results
+           ["select * from testing"]
+           (into [] results)))
+(use 'clj-time)
+(use 'clj-time.core)
+(date-time 2013 12 12)
+(local-date)
+(use 'clj-time.local)
+(local-now)
+(take 10 (periodic-seq (now) (hours 12)))
+(use 'clj-time.periodic)
+(take 10 (periodic-seq (now) (hours 12)))
+(take 10 (periodic-seq (date-time 2013 4 25) (days 7)))
+(take 1000 (periodic-seq (date-time 2013 4 25) (days 7)))
+(take 4 (periodic-seq (date-time 2013 4 25) (days 7)))
+(take 5 (periodic-seq (date-time 2013 4 25) (days 7)))
+(for [x (range 100)] x)
+(partition 4 (take 10 (periodic-seq (date-time 2013 4 25) (days 7))))
+(partition 4 (take 100 (periodic-seq (date-time 2013 4 25) (days 7))))
+(partition 4 (take 10 (periodic-seq (date-time 2013 4 25) (days 7))))
+(partition 4 (take 112 (periodic-seq (date-time 2013 4 25) (days 7))))
+(partition 4 (take 12 (periodic-seq (date-time 2013 4 25) (days 7))))
+(filter (partition 4 (take 100 (periodic-seq (date-time 2013 4 25) (days 7))))
+(filter (fn [cluster] (some (
+(some (= 3) '(1 2 3 4))
+(some #(= 3 %) '(1 2 3 4))
+(some (fn [i] (= 3 i) '(1 2 3 4))
+(some (fn [i] (= 3 i)) '(1 2 3 4))
+(filter (fn [cluster] (some (fn [date] (= (date-time 2013 5 9) date)) cluster)) (partition 4 (take 100 (periodic-seq (date-time 2013 4 25) (days 7)))))
+(time (filter (fn [cluster] (some (fn [date] (= (date-time 2013 5 9) date)) cluster)) (partition 4 (take 100 (periodic-seq (date-time 2013 4 25) (days 7))))))
+(time (filter (fn [cluster] (some (fn [date] (= (date-time 2013 5 9) date)) cluster)) (partition 4 (take 100000 (periodic-seq (date-time 2013 4 25) (days 7))))))
+(filter (fn [cluster] (some (fn [date] (= (date-time 2013 5 9) date)) cluster)) (partition 4 (take 100000 (periodic-seq (date-time 2013 4 25) (days 7)))))
+(time (filter (fn [cluster] (some (fn [date] (= (date-time 2013 5 9) date)) cluster)) (partition 4 (take 100000 (periodic-seq (date-time 2013 4 25) (days 7))))))
+(defn lol [a b] b)
+lol 4 5
+(lol 4 5)
+(lol 6 5)
+(use 'clj-time.format)
+(show-formatters)
+(unparse :year-month-date (da
+(use 'clj-time.core)
+(unparse :year-month-date (date-time 1986 10 14 4 3 27 456))
+(unparse (:year-month-date) (date-time 1986 10 14 4 3 27 456))
+(unparse (formatters :year-month-date) (date-time 1986 10 14 4 3 27 456))
+(formatters)
+(formatters 2)
+(formatters :year-month-date)
+(formatters :year-month-date 3)
+(formatters :year-month-date (date-time 1986 10 14 4 3 27 456))
+(def built-in-formatter (formatters :year-month-date))
+(unparse built-in-formatter (date-time 2010 10 3))
+(def built-in-formatter (formatters :year-month-day))
+(unparse built-in-formatter (date-time 2010 10 3))
+(unparse (formatters :year-month-day) (date-time 2010 10 3))
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]))
+(def format (format/formatters :basic-date-time))
+(defn to-date [str]
+  (format/parse format str))
+(defn from-date [date]
+  (format/unparse format date))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq (time/date-time 2013 4 25) (time/days 7)))))
+(defn get-jueveses [when count]
+  (filter (fn [cluster]
+    (some (fn [date]
+      (= when date)) cluster)) (jueveses count)))
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]))
+(def format (format/formatters :basic-date-time))
+(defn to-date [str]
+  (format/parse format str))
+(defn from-date [date]
+  (format/unparse format date))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq (time/date-time 2013 4 25) (time/days 7)))))
+(defn get-jueveses [when count]
+  (filter (fn [cluster]
+    (some (fn [date]
+      (= when date)) cluster)) (jueveses count)))
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]))
+(def format (format/formatters :basic-date-time))
+(defn to-date [str]
+  (format/parse format str))
+(defn from-date [date]
+  (format/unparse format date))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq (time/date-time 2013 4 25) (time/days 7)))))
+(defn get-jueveses [when count]
+  (filter (fn [cluster]
+    (some (fn [date]
+      (= when date)) cluster)) (jueveses count)))
+(println (get-jueveses (to-date "2013-05-30") 4))
+(format)
+format
+(format/show-formatters)
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]))
+(def format (format/formatters :year-month-day))
+(defn to-date [str]
+  (format/parse format str))
+(defn from-date [date]
+  (format/unparse format date))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq (time/date-time 2013 4 25) (time/days 7)))))
+(defn get-jueveses [when count]
+  (filter (fn [cluster]
+    (some (fn [date]
+      (= when date)) cluster)) (jueveses count)))
+(defn index [req]
+  (response/render (clostache/render (slurp (io/resource "templates/index.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
+(println (get-jueveses (to-date "2013-5-30")))
+(println (get-jueveses (to-date "2013-5-30") 4))
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]))
+(def format (format/formatters :year-month-day))
+(def arbitrary-jueves (time/date-time 2013 4 25))
+(defn to-date [str]
+  (format/parse format str))
+(defn from-date [date]
+  (format/unparse format date))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn get-jueveses [when count]
+  (filter (fn [cluster]
+    (some (fn [date]
+      (= when date)) cluster)) (jueveses count)))
+(defn facturas [req]
+  (response/render (from-date (get (get-jueveses (to-date ((req :query-params) "date")) 4) 0)) req))
+(defn facturas [req]
+  (from-date (get (get-jueveses (to-date ((req :query-params) "date")) 4) 0)) req)
+(defn facturas [req]
+  (from-date (get (get-jueveses (to-date "2013-05-24" 4) 0)))
+)
+facturas ""
+(defn facturas [req]
+  (get (get-jueveses (to-date "2013-5-24") 4))
+)
+(defn facturas [req]
+  (get (get-jueveses (to-date req) 4)))
+(facturas "2013-5-9")
+(defn facturas [req]
+  (get-jueveses (to-date req) 4))
+(facturas "2013-5-9")
+(get (facturas "2013-5-9") 0)
+(get (facturas "2013-5-9") 1)
+(facturas "2013-5-9")
+(first (facturas "2013-5-9"))
+(first ((first (facturas "2013-5-9")))
+)
+(first (facturas "2013-5-9"))
+(first (first (facturas "2013-5-9")))
+(first (first (facturas "2013-5-2")))
+(first (facturas "2013-5-9"))
+(first (facturas "2013-5-2"))
+(first (facturas "2013-5-30"))
+(first (facturas "2013-5-2"))
+(defn jueveses [people]
+  (partition people (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn jueveses [people]
+  (partition people (periodic/periodic-seq arbitrary-jueves (time/days 7) )))
+(first (facturas "2013-5-2"))
