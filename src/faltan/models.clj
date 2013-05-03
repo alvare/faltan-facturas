@@ -11,7 +11,7 @@
            :user "postgres"
            :password "chango"}))
 
-(println (System/getenv "HEROKU_POSTGRESQL_SILVER_URL"))
+(System/getenv)
 
 (defn all []
   (sql/with-connection (System/getenv "DATABASE_URL")
