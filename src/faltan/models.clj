@@ -12,7 +12,7 @@
            :password "chango"}))
 
 (defn all []
-  (sql/with-connection db
+  (sql/with-connection (or (System/getenv "DATABASE_URL") db)
     (sql/with-query-results results
       ["select * from members order by id desc"]
       (into [] results))))
