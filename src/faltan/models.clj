@@ -11,8 +11,10 @@
            :user "postgres"
            :password "chango"}))
 
+(println (or (System/getenv "DATABASE_URL") db))
+
 (defn all []
-  (sql/with-connection (or (System/getenv "DATABASE_URL") db)
+  (sql/with-connection (System/getenv "DATABASE_URL")
     (sql/with-query-results results
       ["select * from members order by id desc"]
       (into [] results))))
