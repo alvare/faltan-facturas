@@ -11,7 +11,7 @@
            :user "postgres"
            :password "chango"}))
 
-(println (System/getenv))
+(println (System/getenv "DATABASE_URL"))
 
 (defn all []
   (sql/with-connection (System/getenv "DATABASE_URL")
