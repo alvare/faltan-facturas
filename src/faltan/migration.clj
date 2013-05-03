@@ -1,8 +1,9 @@
 (ns faltan.migration
-  (:require [clojure.java.jdbc :as sql]))
+  (:require [clojure.java.jdbc :as sql]
+            [faltan.models :as models]))
 
 (defn create-tables []
-  (sql/with-connection (System/getenv "DATABASE_URL")
+  (sql/with-connection models/db
     (sql/create-table :members
       [:id :serial "PRIMARY KEY"]
       [:name :varchar "NOT NULL"]
