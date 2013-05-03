@@ -17,7 +17,7 @@
 
 (def arbitrary-jueves (time/date-time 2013 4 25))
 
-(def jueveses (partition (count (models/all)) (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn jueveses [] (partition (count (models/all)) (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
 
 (defn json-response [data & [status]]
   {:status (or status 200)
@@ -41,11 +41,11 @@
 (defn get-jueveses [whend]
   (first (filter (fn [cluster]
     (some (fn [date]
-      (= whend date)) cluster)) jueveses)))
+      (= whend date)) cluster)) (jueveses))))
 
 (defn choosen [date]
   (let [jvs (get-jueveses date)]
-    (nth (ppl-sort (.indexOf jvs jueveses) (models/all)) (.indexOf jvs date))))
+    (nth (ppl-sort (.indexOf jvs (jueveses)) (models/all)) (.indexOf jvs date))))
 
 (defn facturas [req]
   (json-response (choosen (to-date ((req :query-params) "date")))))
