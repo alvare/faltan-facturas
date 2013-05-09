@@ -1,10 +1,19 @@
 (ns faltan.models
   (:require [clojure.java.jdbc :as sql]))
 
-(def db "postgres://nmqvybynywbhtv:BTheho_c3ywg5ZSV6fTrTGMwNc@ec2-54-243-229-57.compute-1.amazonaws.com:5432/d4pll0n9j96s1q")
+(let [db-host "localhost"
+      db-port 5432
+      db-name "facturas"]
+ 
+  (def db {:classname "org.postgresql.Driver"
+           :subprotocol "postgresql"
+           :subname (str "//" db-host ":" db-port "/" db-name)
+           :user "postgres"
+           :password "chango"}))
+
 
 (defn all []
-  (sql/with-connection db
+  (sql/with-connection (or (System/getenv "DATABASE_URL") db)
     (sql/with-query-results results
       ["select * from members order by id desc"]
       (into [] results))))
