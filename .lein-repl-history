@@ -1,125 +1,3 @@
-  (partition people (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
-(defn jueveses [people]
-  (partition people (periodic/periodic-seq arbitrary-jueves (time/days 7) )))
-(first (facturas "2013-5-2"))
-(rand-nth (1 2 3 4))
-(rand-nth '(1 2 3 4))
-(rand-nth (1 2 3 4))
-(rand-nth '(1 2 3 4))
-(defn rndm [seed]
-  (let [r (java.util.Random. seed)]
-)
-  (.nextInt r))
-(defn rndm [seed]
-  (let [r (java.util.Random. seed)]
-  (.nextInt r))
-)
-(rndm 1)
-(rndm 2)
-(rndm 12345)
-(defn rndm [seed n]
-  (let [r (java.util.Random. seed)]
-  (.nextInt r n))
-)
-(rndm 0 1)
-(rndm 0 2)
-(rndm 0 3)
-(rndm 0 4)
-(rndm 0 5)
-(rndm 0 6)
-(rndm 0 7)
-(rndm 2 7)
-(rndm 12345 7)
-(rndm 12345 100)
-(rndm 12345 10)
-(rndm 12345 1)
-(rndm 12345 12)
-(rndm 123454 12)
-(rndm 1234 12)
-(rndm 1 1)
-(rndm 2 1)
-(rndm 3 1)
-(rndm 4 1)
-(rndm 5 1)
-(rndm 6 1)
-(rndm 7 1)
-(rndm 1 200)
-(rndm 1 4)
-(rndm 2 4)
-(rndm 3 4)
-(rndm 4 4)
-(rndm 5 4)
-(rndm 7 4)
-(rndm 1000 4)
-(rndm 1000 1)
-(rndm 1000 2)
-(rndm 1000 3)
-(rndm 1000 4)
-(rndm 1000 5)
-(rndm 1000 6)
-(rndm 1000 7)
-(rndm 1000 8)
-(rndm 2000 8)
-(rndm 3000 8)
-(rndm 4000 8)
-(rndm 10000 8)
-(rndm 400 8)
-(rndm 400 1)
-(rndm 400 2)
-(rndm 400 3)
-(rndm 400 4)
-(rndm 400 5)
-(use 'clojure.contrib.probabilities.random-numbers)
-(use clojure.contrib.probabilities.random-numbers)
-(rndm 400 3)
-(defn rndm [seed n]
-  (let [r (java.util.Random. seed)]
-  (.nextInt r n))
-)
-(defn rndm [seed n]
-  (let [r (java.util.Random. seed)]
-  (.nextDouble r n))
-)
-(rndm 1 10)
-(defn rndm [seed n]
-  (let [r (java.util.Random. seed)]
-  (.nextInt r n))
-)
-(rndm 1 10)
-(rndm 1 10000)
-(rndm 2 10000)
-(rndm 3 10000)
-(rndm 4 10000)
-(rndm 4 100009)
-(rndm 4 1000099)
-(rndm 4 100009999)
-(rndm 4 10000)
-(rndm 5 10000)
-(use 'faltan.models)
-(faltan.models/all)
-(first (faltan.models/all))
-(use 'faltan.models)
-(first (faltan.models/all))
-(faltan.models/all)
-(use 'faltan.models)
-(faltan.models/all)
-(use 'faltan.models)
-(faltan.models/all)
-(use '[clojure.tools.namespace.repl :only (refresh)])
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
 (use 'faltan.models :reload)
 (faltan.models/all)
 (first (faltan.models/all))
@@ -498,3 +376,125 @@ jueveses
 (or (System/getenv "DATABASE_URL") db)
 (System/getProperties)
 (System/getenv)
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]
+            [clj-json.core :as json]))
+(def formatd (format/formatters :year-month-day))
+(def arbitrary-jueves (time/date-time 2013 4 25))
+(defn jueveses [] (partition (count (models/all)) (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn json-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/generate-string data)})
+(defn rndm [seed max]
+  (let [r (java.util.Random. seed)]
+    (.nextInt r max)))
+(defn ppl-sort [pos coll]
+  (sort-by first (map-indexed
+    (fn [idx item] [(rndm (inc idx) (+ 10000 pos)) item]) coll)))
+(defn to-date [str]
+  (format/parse formatd str))
+(defn from-date [date]
+  (format/unparse formatd date))
+(defn get-jueveses [whend]
+  (first (filter (fn [cluster]
+    (some (fn [date]
+      (= whend date)) cluster)) (jueveses))))
+(defn choosen [date]
+  (let [jvs (get-jueveses date)]
+    (nth (ppl-sort (.indexOf jvs (jueveses)) (models/all)) (.indexOf jvs date))))
+(defn facturas [req]
+  (json-response (choosen (to-date ((req :query-params) "date")))))
+(defn index [req]
+  (response/render (slurp (io/resource "templates/index.html")) req))
+(defn faltan [req]
+  (response/render (clostache/render (slurp (io/resource "templates/faltan.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
+(defroutes app
+  (GET "/" [] index)
+  (GET "/facturas" [] facturas)
+  (route/resources "/" {:root "templates"})
+  (route/not-found (slurp (io/resource "404.html"))))
+(jueveses)
+(partition
+ (1 2 3 4))
+(partition [1 2 3 4])
+(partition 2 [1 2 3 4])
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]
+            [clj-json.core :as json]))
+(def formatd (format/formatters :year-month-day))
+(def arbitrary-jueves (time/date-time 2013 4 25))
+(defn jueveses [] (partition (count (models/all)) (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn json-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/generate-string data)})
+(defn rndm [seed max]
+  (let [r (java.util.Random. seed)]
+    (.nextInt r max)))
+(defn ppl-sort [pos coll]
+  (sort-by first (map-indexed
+    (fn [idx item] [(rndm (inc idx) (+ 10000 pos)) item]) coll)))
+(defn to-date [str]
+  (format/parse formatd str))
+(defn from-date [date]
+  (format/unparse formatd date))
+(defn get-jueveses [whend]
+  (first (filter (fn [cluster]
+    (some (fn [date]
+      (= whend date)) cluster)) (jueveses))))
+(defn choosen [date]
+  (let [jvs (get-jueveses date)]
+    (nth (ppl-sort (.indexOf jvs (jueveses)) (models/all)) (.indexOf jvs date))))
+(defn facturas [req]
+  (json-response (choosen (to-date ((req :query-params) "date")))))
+(defn index [req]
+  (response/render (slurp (io/resource "templates/index.html")) req))
+(defn faltan [req]
+  (response/render (clostache/render (slurp (io/resource "templates/faltan.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
+(defroutes app
+  (GET "/" [] index)
+  (GET "/facturas" [] facturas)
+  (route/resources "/" {:root "templates"})
+  (route/not-found (slurp (io/resource "404.html"))))
+(take 1000 (repeat 5))
+repeat 5
+(first (repeat 5))
+(take 1000 (filter (== 5) (repeat 5)))
+(take 1000 (filter (= 5) (repeat 5)))
+(take 1000 (filter (fn [n] (== n 5)) (repeat 5)))
+(head (filter (fn [n] (== n 5)) (repeat 5)))
+(take 1000 (filter (fn [n] (== n 5)) (repeat 5)))
+(head (filter (fn [n] (== n 5)) (repeat 5)))
+(first (filter (fn [n] (== n 5)) (repeat 5)))
+(take 1000 (filter (fn [n] (== n 5)) (repeat 5)))
+(take 1000 (filter (fn [n] (== n 5)) ((partition 3 (repeat 5))))
+(take 1000 (filter (fn [n] (== n 5)) (partition 4 (repeat 5)))
+(take 1000 (filter (fn [n] (== n 5)) (partition 4 (repeat 5))))
+(take 1000 (filter (fn [n] True) (partition 4 (repeat 5))))
+(take 1000 (filter (fn [n] true) (partition 4 (repeat 5))))
+(first (filter (fn [n] true) (partition 4 (repeat 5))))
+(first (filter (fn [n] some (fn [b] (== b 5))) (partition 4 (repeat 5))))
+(defn jueveses [] (partition (count (models/all)) (periodic/periodic-seq arbitrary-jueves (time/days 7))))

@@ -2,49 +2,35 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title>Facturas</title>
-
-<link rel="stylesheet" href="css/redmond/jquery-ui-1.9.2.custom.min.css">
-<script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
-
+<title>Faltan...</title>
 <style type="text/css">
-    .centered {
-        width: 240px;
-        margin: auto;
-        margin-top: 100px;
-    }
+@import "css/jquery.countdown.css";
 
-    #result {
-        margin-top: 1em;
-    }
+#defaultCountdown {
+    width: 240px;
+    height: 45px;
+    margin: auto;
+    margin-top: 200px;
+}
+
+#content {
+}
+
 </style>
-<script>
-    $(function(){
-        $('#date').datepicker({
-            dateFormat: "yy-mm-dd"
-        });
-
-        $('#show-results').click(function(){
-            $.ajax({
-                url: "/facturas",
-                data: {date: $('#date').val()}
-            }).done(function(data){
-                $('#result').html("<h3>" + data[1].name + "</h3>").css('color', 'black');
-            }).fail(function(){
-                $('#result').html("Error Dog 404 Shit").css('color', 'red');
-            });
-        });
-    });
+<script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/jquery.countdown.js"></script>
+<script type="text/javascript">
+$(function () {
+	var austDay = new Date();
+	austDay = new Date({{year}}, {{month}} - 1, {{day}}, {{hour}}, {{minutes}}, 0 ,0);
+	$('#defaultCountdown').countdown({until: austDay});
+	$('#year').text(austDay.getFullYear());
+});
 </script>
 </head>
 <body>
 <div id="content">
-    <div class="centered">
-        <input type="text" id="date" />
-        <button id="show-results">So?</button>
-        <div id="result"></div>
-    </div>
+    <div id="defaultCountdown"></div>
 </div>
 </body>
 </html>

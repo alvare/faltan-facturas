@@ -50,15 +50,14 @@
 (defn facturas [req]
   (json-response (choosen (to-date ((req :query-params) "date")))))
 
-(defn view [req]
-  (response/render (slurp (io/resource "templates/facturas.html")) req))
-
 (defn index [req]
-  (response/render (clostache/render (slurp (io/resource "templates/index.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
+  (response/render (slurp (io/resource "templates/index.html")) req))
+
+(defn faltan [req]
+  (response/render (clostache/render (slurp (io/resource "templates/faltan.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
 
 (defroutes app
   (GET "/" [] index)
-  (GET "/view" [] view)
   (GET "/facturas" [] facturas)
   (route/resources "/" {:root "templates"})
   (route/not-found (slurp (io/resource "404.html"))))
