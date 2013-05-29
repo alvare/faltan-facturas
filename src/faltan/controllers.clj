@@ -43,21 +43,27 @@
     (some (fn [date]
       (= whend date)) cluster)) (jueveses))))
 
+;[8774,{"picture":null,"name":"facundo","id":2}]
 (defn choosen [date]
   (let [jvs (get-jueveses date)]
     (nth (ppl-sort (.indexOf jvs (jueveses)) (models/all)) (.indexOf jvs date))))
 
+(defn index [req]
+  (response/render (clostache/render (slurp (io/resource "templates/index.html")) {}) req))
+
 (defn facturas [req]
   (json-response (choosen (to-date ((req :query-params) "date")))))
-
-(defn index [req]
-  (response/render (slurp (io/resource "templates/index.html")) req))
 
 (defn faltan [req]
   (response/render (clostache/render (slurp (io/resource "templates/faltan.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
 
+(defn toca [date]
+  (clostache/render (slurp (io/resource "templates/index.html")) (merge (second (choosen (to-date date))) {:date date} )))
+
 (defroutes app
   (GET "/" [] index)
   (GET "/facturas" [] facturas)
+  (GET "/faltan" [] faltan)
+  (GET "/toca/:d" [d] (toca d))
   (route/resources "/" {:root "templates"})
   (route/not-found (slurp (io/resource "404.html"))))

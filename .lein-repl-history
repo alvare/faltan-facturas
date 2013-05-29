@@ -1,51 +1,3 @@
-(use 'faltan.models :reload)
-(faltan.models/all)
-(first (faltan.models/all))
-(faltan.models/all)
-(use 'faltan.models :reload)
-(faltan.models/all)
-(first (faltan.models/all))
-(get (faltan.models/all) 0)
-(get (faltan.models/all) 1)
-(get (faltan.models/all) 2)
-(faltan.models/all)
-(map-indexed (fn [idx itm] [idx itm]) "foobar")
-(map-indexed (fn [idx itm] [idx itm]) (faltan.models/all))
-(map-indexed (fn [idx itm] {:idx itm}) (faltan.models/all))
-(map-indexed (fn [idx itm] [idx itm]) (faltan.models/all))
-(use 'faltan.models :reload)
-(map-indexed (fn [idx itm] [idx itm]) (faltan.models/all))
-(faltan.models/all)
-(map-indexed 1 (faltan.models/all))
-(map-indexed inc (faltan.models/all))
-(map-indexed (fn [idx e] (idx e)) (faltan.models/all))
-(map-indexed (fn [idx e] [idx e]) (faltan.models/all))
-(map-indexed (fn [idx e] [(rndm 1 idx) e]) (faltan.models/all))
-(use 'faltan.controllers)
-(use 'faltan.controllers :reload)
-(map-indexed (fn [idx e] [(rndm 1 idx) e]) (faltan.models/all))
-(rndm 1 1)
-(rndm 1 0)
-(map-indexed (fn [idx e] [(rndm 1 (inc idx)) e]) (faltan.models/all))
-(map-indexed (fn [idx e] [(rndm (inc idx) 1000) e]) (faltan.models/all))
-(map-indexed (fn [idx e] [(rndm (inc idx) 10000) e]) (faltan.models/all))
-(sort-by first (map-indexed (fn [idx e] [(rndm (inc idx) 10000) e]) (faltan.models/all)))
-(defn chapita [pos] (sort-by first (map-indexed (fn [idx e] [(rndm (inc idx) (+ 10000 pos) e]) (faltan.models/all)))))
-(defn chapita [pos] (sort-by first (map-indexed (fn [idx e] [(rndm (inc idx) (+ 10000 pos) e]) (faltan.models/all))))
-(defn chapita [pos] (sort-by first (map-indexed (fn [idx e] [(rndm (inc idx) (+ 10000 pos)) e] (faltan.models/all)))))
-(chapita 1)
-(chapita 2)
-(defn chapita [pos] (sort-by first (map-indexed (fn [idx e] [(rndm (inc idx) (+ 10000 pos)) e]) (faltan.models/all))))
-(chapita 2)
-(chapita 3)
-(chapita 4)
-(chapita 5)
-(chapita 6)
-(use 'faltan.contorllers :reload)
-(use 'faltan.controllers :reload)
-(faltan.controllers/ppl-sort 1 (faltan.models/all))
-(faltan.controllers/ppl-sort 2 (faltan.models/all))
-(faltan.controllers/ppl-sort 3 (faltan.models/all))
 (faltan.controllers/ppl-sort 4 (faltan.models/all))
 (faltan.controllers/ppl-sort 100 (faltan.models/all))
 (count (faltan.models/all))
@@ -498,3 +450,51 @@ repeat 5
 (first (filter (fn [n] true) (partition 4 (repeat 5))))
 (first (filter (fn [n] some (fn [b] (== b 5))) (partition 4 (repeat 5))))
 (defn jueveses [] (partition (count (models/all)) (periodic/periodic-seq arbitrary-jueves (time/days 7))))
+(ns faltan.controllers
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [clojure.string :as str]
+            [compojure.route :as route]
+            [compojure.response :as response]
+            [clostache.parser :as clostache]
+            [clojure.string :refer [split]]
+            [clojure.java.io :as io]
+            [faltan.models :as models]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as format]
+            [clj-time.periodic :as periodic]
+            [clj-json.core :as json]))
+(def formatd (format/formatters :year-month-day))
+(def arbitrary-jueves (time/date-time 2013 4 25))
+(defn jueveses [] (partition (count (models/all)) (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
+(defn json-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/generate-string data)})
+(defn rndm [seed max]
+  (let [r (java.util.Random. seed)]
+    (.nextInt r max)))
+(defn ppl-sort [pos coll]
+  (sort-by first (map-indexed
+    (fn [idx item] [(rndm (inc idx) (+ 10000 pos)) item]) coll)))
+(defn to-date [str]
+  (format/parse formatd str))
+(defn from-date [date]
+  (format/unparse formatd date))
+(defn get-jueveses [whend]
+  (first (filter (fn [cluster]
+    (some (fn [date]
+      (= whend date)) cluster)) (jueveses))))
+;[8774,{"picture":null,"name":"facundo","id":2}]
+(defn choosen [date]
+  (let [jvs (get-jueveses date)]
+    (nth (ppl-sort (.indexOf jvs (jueveses)) (models/all)) (.indexOf jvs date))))
+(defn index [req]
+  (response/render (slurp (io/resource "templates/index.html")) req))
+(defn facturas [req]
+  (json-response (choosen (to-date ((req :query-params) "date")))))
+(to-date "2013-05-23")
+(choosen (to-date "2013-05-23"))
+(first (choosen (to-date "2013-05-23")))
+(last (choosen (to-date "2013-05-23")))
+(second (choosen (to-date "2013-05-23")))
