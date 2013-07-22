@@ -9,6 +9,14 @@
       [:name :varchar "NOT NULL"]
       [:picture :text])))
 
+(defn insert-members []
+  (sql/with-connection models/db
+    (sql/insert-records :members
+      {:name "Facundo"}
+      {:name "Rasta"}
+      {:name "Ezequiel"}
+      {:name "Ale"})))
+
 (defn -main []
   (print "Creating database structure...") (flush)
   (create-tables)

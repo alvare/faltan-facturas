@@ -60,10 +60,14 @@
 (defn toca [date]
   (clostache/render (slurp (io/resource "templates/index.html")) (merge (second (choosen (to-date date))) {:date date} )))
 
+(defn toca-plain [date]
+  (str ((second (choosen (to-date date))) :name)))
+
 (defroutes app
   (GET "/" [] index)
   (GET "/facturas" [] facturas)
   (GET "/faltan" [] faltan)
   (GET "/toca/:d" [d] (toca d))
+  (GET "/toca-plain/:d" [d] (toca-plain  d))
   (route/resources "/" {:root "templates"})
   (route/not-found (slurp (io/resource "404.html"))))
