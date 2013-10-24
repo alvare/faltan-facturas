@@ -1,0 +1,11 @@
+.centered {
+    width: 240px;
+    margin: auto;
+    margin-top: 100px;
+}
+#result {
+    margin-top: 1em;
+    font: 18px Arial;
+    font-weight: bold;
+    text-align: center;
+}

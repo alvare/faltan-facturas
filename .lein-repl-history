@@ -1,24 +1,3 @@
-(ppl 1)
-(get (ppl 1) 1)
-(get (ppl 1) 2)
-(get (ppl 1) 0)
-(nth (ppl 1) (.indexOf (faltan.controllers/get-jueveses (faltan.controllers/to-date "2013-5-30") 5) (faltan.controllers/to-date "2013-6-13")))
-(nth (ppl 1) (.indexOf (faltan.controllers/get-jueveses (faltan.controllers/to-date "2013-5-30") 5) (faltan.controllers/to-date "2013-6-6")))
-[2625 {:picture nil, :name "ezequiel", :id 1}]
-'[2625 {:picture nil, :name "ezequiel", :id 1}]
-(use 'faltan)
-(use 'faltan.web)
-faltan.web/-main
-(faltan.web/-main)
-(faltan.models/all)
-(count (faltan.models/all))
-(count faltan.models/all)
-(count 'faltan.models/all)
-(use 'faltan.web :reload)
-(faltan.web/-main)
-(defn choosen [date]
-  (nth (get-jueveses date (count (models/all))) (.indexOf (get-jueveses date (count (models/all))) date)))
-(defn choosen [date]
 (ns faltan.controllers
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [clojure.string :as str]
@@ -498,3 +477,24 @@ repeat 5
 (toca-plain "2013-07-25")
 (require 'faltan.controllers :reload)
 (toca-plain "2013-07-25")
+(use faltan)
+(use 'faltan)
+(use 'faltan.controllers)
+(use 'compojure)
+(use 'compojure.core)
+(run-server)
+(facturas)
+(use 'compojure.handler)
+(use 'compojure)
+(use 'compojure.response)
+(render "lala")
+(render "lala" {:status 400 :headers {"Content" "html"}})
+(use 'hiccup.page)
+(html5 (p "lala"))
+(use 'hiccup.core)
+(html5 (p "lala"))
+(html (html5 (p "lala")))
+(html (html5 (a "lala")))
+(html (html5 ))
+(html (html5 [:p "lala"]))
+(html5 [:p "lala"])

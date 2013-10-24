@@ -9,7 +9,7 @@
                  [ring/ring-devel "1.1.0"]
                  [ring-basic-authentication "1.0.1"]
                  [environ "0.2.1"]
-                 [de.ubercode.clostache/clostache "1.3.1"]
+                 [hiccup "1.0.4"]
                  [org.clojure/java.jdbc "0.2.3"]
                  [postgresql "9.1-901.jdbc4"]
                  [clj-time "0.5.0"]

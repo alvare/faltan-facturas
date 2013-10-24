@@ -11,7 +11,6 @@
            :user "postgres"
            :password "chango"}))
 
-
 (defn all []
   (sql/with-connection (or (System/getenv "DATABASE_URL") db)
     (sql/with-query-results results

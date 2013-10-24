@@ -4,7 +4,7 @@
             [ring.middleware.stacktrace :as trace]
             [ring.middleware.session.cookie :as cookie]
             [ring.adapter.jetty :as jetty]
-            [clostache.parser :as clostache]
+            [ring.middleware.reload :as reload]
             [clojure.string :refer [split]]
             [environ.core :refer [env]]
             [faltan.controllers :as controllers]))
@@ -23,6 +23,6 @@
     (jetty/run-jetty (-> #'controllers/app
                          ((if (env :production)
                             wrap-error-page
-                            trace/wrap-stacktrace))
+                            reload/wrap-reload))
                          (site {:session {:store store}}))
                      {:port port :join? false})))
