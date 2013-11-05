@@ -3,11 +3,11 @@
   :url "http://faltan.herokuapp.com"
   :license {:name "FIXME: choose"
             :url "http://example.com/FIXME"}
-  :dependencies [[org.clojure/clojure "1.4.0"]
-                 [compojure "1.1.1"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [com.cemerick/friend "0.2.0"]
+                 [compojure "1.1.5" :exclusions [ring/ring-core]]
                  [ring/ring-jetty-adapter "1.1.0"]
                  [ring/ring-devel "1.1.0"]
-                 [ring-basic-authentication "1.0.1"]
                  [environ "0.2.1"]
                  [hiccup "1.0.4"]
                  [org.clojure/java.jdbc "0.2.3"]

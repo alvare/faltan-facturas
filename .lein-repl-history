@@ -10,64 +10,6 @@
             [ring.util.response :as ring]
             [clj-time.core :as time]
             [clj-time.format :as format]
-            [clj-time.periodic :as periodic]))
-(def formatd (format/formatters :year-month-day))
-(def arbitrary-jueves (time/date-time 2013 4 25))
-(defn rndm [seed max]
-  (let [r (java.util.Random. seed)]
-    (.nextInt r max)))
-(defn ppl-sort [pos coll]
-  (sort-by first (map-indexed
-    (fn [idx item] [(rndm (inc idx) (+ 10000 pos)) item]) coll)))
-(defn to-date [str]
-  (format/parse formatd str))
-(defn from-date [date]
-  (format/unparse formatd date))
-(defn jueveses [cnt]
-  (partition cnt (take 1000 (periodic/periodic-seq arbitrary-jueves (time/days 7)))))
-(defn get-jueveses [when cnt]
-  (first (filter (fn [cluster]
-    (some (fn [date]
-      (= when date)) cluster)) (jueveses cnt))))
-(defn choosen [date]
-  (nth (get-jueveses date (count (models/all))) (.indexOf (get-jueveses date (count (models/all))) date)))
-(defn facturas [req]
-  (response/render (choosen (to-date ((req :query-params) "date"))) req))
-(defn index [req]
-  (response/render (clostache/render (slurp (io/resource "templates/index.html")) (zipmap [:year :month :day :hour :minutes] (split ((req :query-params) "date") #"-"))) req))
-(defroutes app
-  (GET "/" [] index)
-  (GET "/facturas" [] facturas)
-  (route/resources "/" {:root "templates"})
-  (route/not-found (slurp (io/resource "404.html"))))
-(choosen (time/date-time 2013 5 30))
-(defn choosen [date]
-  (let [jvs (get-jueveses date (count (models/all)))]
-    (nth (ppl-sort (.indexOf jvs (jueveses (count (models/all)))) (models/all)) (.indexOf date jvs))))
-(choosen (time/date-time 2013 5 30))
-(defn choosen [date]
-    (nth (ppl-sort (.indexOf jvs (jueveses (count (models/all)))) (models/all)) (.indexOf date jvs))))
-(defn choosen [date]
-  (let [jvs (get-jueveses date (count (models/all)))]
-    (nth (ppl-sort (.indexOf jvs (jueveses (count (models/all)))) (models/all)) (.indexOf jvs date))))
-(choosen (time/date-time 2013 5 30))
-(choosen (time/date-time 2013 5 23))
-(choosen (time/date-time 2013 5 16))
-(choosen (time/date-time 2013 7 25))
-(choosen (time/date-time 2013 7 11))
-(choosen (time/date-time 2013 7 4))
-(ns faltan.controllers
-  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
-            [clojure.string :as str]
-            [compojure.route :as route]
-            [compojure.response :as response]
-            [clostache.parser :as clostache]
-            [clojure.string :refer [split]]
-            [clojure.java.io :as io]
-            [faltan.models :as models]
-            [ring.util.response :as ring]
-            [clj-time.core :as time]
-            [clj-time.format :as format]
             [clj-json.core :as json]
             [clj-time.periodic :as periodic]))
 (def formatd (format/formatters :year-month-day))
@@ -498,3 +440,61 @@ repeat 5
 (html (html5 ))
 (html (html5 [:p "lala"]))
 (html5 [:p "lala"])
+(use 'hiccup.form)
+(form-to [:post "lala"])
+(use 'faltan.models)
+(all)
+(first (all))
+((first (all)) :name)
+(use 'hiccup.core)
+(html [p])
+(html [:p])
+(html [:ul (for [x ["a" "b" "c"])
+(for [x ["x" "y"]] x)
+(into [] (for [x ["x" "y"]] x))
+[:ul (for [x ["a" "b" "c"]] x)]
+[:ul (for [x [:li "a" :li "b" :li "c"]] x)]
+[:ul (into [] (for [x [:li "a" :li "b" :li "c"]] x))]
+[:ul (into [] (for [x ["a" "b" "c"]] [:li x]))]
+[:ul (into [] (flatten (for [x ["a" "b" "c"]] [:li x])))]
+(cons :ul [:li "a"])
+(cons :ul '(:li "a"))
+(use 'hiccup.core)
+(html
+      (cons :ul (flatten (for [person ppl]
+        [:li (:name person)]))))
+(html    (html (cons :ul (flatten (for [person ppl] [:li (:name person)]))))))
+    (html (cons :ul (flatten (for [person ppl] [:li (:name person)]))))))
+    (html (cons :ul (flatten (for [person ["a" "b"]] [:li person]))))))
+    (html (cons :ul (flatten (for [person ["a" "b"]] [:li person]))))
+(flatten [:l1 "a" :li "b"])
+(cons :ul (flatten [:l1 "a" :li "b"]))
+(cons :ul (flatten (for [person ["a" "b"]] [:li person])))
+(into [] (cons :ul (flatten (for [person ["a" "b"]] [:li person]))))
+(html
+      [:ul (into [] (for [person ppl]
+        [:li (:name person)]))])
+(use 'hiccup.core)
+(html
+      [:ul (into [] (for [person ppl]
+        [:li (:name person)]))])
+(def ppl [{:name "lala"} {:name "jaja"}])
+(html
+      [:ul (into [] (for [person ppl]
+        [:li (:name person)]))])
+[:ul (into [] (for [person ppl]
+        [:li (:name person)]))]
+(cons
+[:ul] :a)
+(cons :ul [:li])
+      [:ul (into [] (for [person ppl] [:li (:name person)]))])))
+(concat [:ul] (for [person ppl] [:li (:name person)]))
+(into [] (concat [:ul] (for [person ppl] [:li (:name person)])))
+(into [:ul] '(1 2))
+(into [:ul]  (for [person ppl] [:li (:name person)]))
+(use environ.core)
+(use 'environ.core)
+(env :production)
+(use 'environ.core)
+(use 'environ.core :reload)
+(env :production)
