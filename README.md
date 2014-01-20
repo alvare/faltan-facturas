@@ -6,8 +6,8 @@ A [Heroku](http://www.heroku.com) web app using Compojure made for choosing who 
 
 Try it here:
 
-    http://desolate-river-5518.herokuapp.com/
+    http://faltan-facturas.herokuapp.com/
 
 Or here, for a specific date:
 
-    http://desolate-river-5518.herokuapp.com/toca/2013-06-06
+    http://faltan-facturas.herokuapp.com/toca/2013-06-06
